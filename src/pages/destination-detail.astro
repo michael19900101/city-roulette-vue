@@ -8,12 +8,12 @@ import DestinationContent from '@/components/destination-detail/DestinationConte
 
 <BaseLayout title="目的地详情 - 城市转盘">
   <div class="flex flex-col min-h-screen bg-background">
-    <CommonHeader client:load showBackButton={true} backUrl="./home-explorer.html" />
-    
+    <CommonHeader client:load showBackButton={true} backUrl="./home-explorer" />
+
     <main class="flex-1">
       <DestinationContent client:load />
     </main>
-    
+
     <CommonFooter />
   </div>
 </BaseLayout>
