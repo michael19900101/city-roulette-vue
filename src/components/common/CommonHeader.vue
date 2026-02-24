@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <header 
+  <header
     class="sticky top-0 z-50 w-full border-b transition-colors"
     :class="transparent ? 'bg-background/80 backdrop-blur-md' : 'bg-background'"
   >
@@ -34,13 +34,13 @@ const props = withDefaults(defineProps<Props>(), {
         >
           <SafeIcon name="ArrowLeft" :size="20" />
         </Button>
-        
+
         <!-- Logo/Brand -->
-        <a 
-          href="./home-explorer.html" 
+        <a
+          href="./home-explorer.html"
           class="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-opacity"
         >
-          <div class="w-8 h-8 rounded-lg bg-gradient-warm flex items-center justify-center text-white shadow-soft">
+          <div class="w-8 h-8 rounded-lg bg-gradient-warm flex items-center justify-center text-orange-950 shadow-soft">
             <SafeIcon name="Compass" :size="20" />
           </div>
           <span class="hidden sm:inline-block text-gradient">城市转盘</span>
