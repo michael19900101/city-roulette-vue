@@ -31,11 +31,11 @@ const filterGroups = [
 </script>
 
 <template>
-  <div class="w-full border-b bg-background/80 backdrop-blur-sm sticky top-16 z-40">
-    <div class="container mx-auto px-4">
+<div class="w-full border-b bg-background/95 backdrop-blur-md sticky top-16 z-10 shadow-sm">
+<div class="container mx-auto px-4">
       <Accordion type="single" collapsible class="w-full">
         <AccordionItem value="filters" class="border-0">
-          <AccordionTrigger class="py-4 hover:no-underline">
+          <AccordionTrigger class="py-1 hover:no-underline">
             <div class="flex items-center gap-2">
               <SafeIcon name="Filter" :size="20" />
               <span class="font-semibold">筛选条件</span>

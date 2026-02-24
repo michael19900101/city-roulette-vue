@@ -7,27 +7,36 @@ import FilterPanel from './FilterPanel.vue'
 import CityWheel from './CityWheel.vue'
 import DrawButton from './DrawButton.vue'
 import ResultCard from './ResultCard.vue'
+import SafeIcon from '@/components/common/SafeIcon.vue'
+import { Badge } from '@/components/ui/badge'
 
-// Client state (SSR-safe: false during build/SSR, true after hydration)
- const isClient = ref(false)
+// Client state (SSR-safe)
+const isMounted = ref(false)
+const hasResult = ref(false)
 
 // Data state
 const selectedCity = ref<CityDetailModel>(CITIES[0])
 const selectedFilters = ref<Set<string>>(new Set())
 const isSpinning = ref(false)
 const wheelRotation = ref(0)
+const lastRotation = ref(0)
 
 // Computed
 const filteredCities = computed(() => {
-  if (selectedFilters.size === 0) return CITIES
+  if (selectedFilters.size === 0) return CITIES.slice(0, 20)
   
-  return CITIES.filter(city => {
+  const filtered = CITIES.filter(city => {
     for (const filter of selectedFilters.value) {
-      // Check if filter matches city region or other attributes
-      if (city.region === filter) return true
+      // Match behavior for regions in data/city.ts
+      const regionMap: Record<string, string> = {
+        'east': '华东', 'south': '华南', 'north': '华北', 'southwest': '西南', 'northwest': '西北'
+      }
+      if (city.region === regionMap[filter] || city.region === filter) return true
     }
     return false
   })
+  
+  return filtered.length > 0 ? filtered.slice(0, 20) : CITIES.slice(0, 20)
 })
 
 // Methods
@@ -37,26 +46,40 @@ const handleFilterChange = (filterId: string, isChecked: boolean) => {
   } else {
     selectedFilters.value.delete(filterId)
   }
+  // Reset wheel position on filter change to avoid confusion
+  wheelRotation.value = 0
+  lastRotation.value = 0
+  hasResult.value = false
 }
 
 const handleDraw = () => {
   if (isSpinning.value) return
   
   isSpinning.value = true
+  hasResult.value = false
   
-  // Calculate random rotation (at least 5 full rotations + random offset)
-  const randomRotation = Math.random() * 360 + 1800
-  wheelRotation.value = randomRotation
+  const pool = filteredCities.value
+  const targetIndex = Math.floor(Math.random() * pool.length)
+  const segmentAngle = 360 / pool.length
   
-  // Simulate spin duration (3 seconds)
+  // Logic: The pointer is at 12 o'clock (0 deg relative to screen)
+  // To make target item stop AT the top, the wheel must rotate:
+  // (360 - itemOffsetAngle). For center of segment, add half angle.
+  const targetItemRotation = 360 - (targetIndex * segmentAngle) - (segmentAngle / 2)
+  
+  // Add 5-8 full laps (1800-2880 deg) to last cumulative rotation
+  const extraLaps = (5 + Math.floor(Math.random() * 3)) * 360
+  const newRotation = lastRotation.value + (360 - (lastRotation.value % 360)) + extraLaps + targetItemRotation
+  
+  wheelRotation.value = newRotation
+  lastRotation.value = newRotation
+  
+  // Sync result after animation
   setTimeout(() => {
-    // Select random city from filtered list
-    const pool = filteredCities.value.length > 0 ? filteredCities.value : CITIES
-    const randomIndex = Math.floor(Math.random() * pool.length)
-    selectedCity.value = pool[randomIndex]
-    
+    selectedCity.value = pool[targetIndex]
     isSpinning.value = false
-  }, 3000)
+    hasResult.value = true
+  }, 4000)
 }
 
 const handleNavigateToDetail = () => {
@@ -65,32 +88,37 @@ const handleNavigateToDetail = () => {
 }
 
 // SSG/Hydration lifecycle
- onMounted(() => {
-   isClient.value = true
- })
+onMounted(() => {
+  isMounted.value = true
+})
 </script>
 
 <template>
   <div class="w-full min-h-screen flex flex-col">
     <!-- Filter Panel -->
-<FilterPanel 
-       @filter-change="handleFilterChange"
-     />
+<FilterPanel @filter-change="handleFilterChange" />
     
     <!-- Wheel Section -->
-    <section class="flex-1 flex flex-col items-center justify-center py-8 px-4">
-      <div class="w-full max-w-2xl flex flex-col items-center gap-8">
+    <section class="flex-1 flex flex-col items-center justify-center pt-8 pb-12 px-4 transition-all duration-300">
+      <div class="w-full max-w-2xl flex flex-col items-center gap-16">
         <!-- Wheel Container -->
-        <div class="relative w-full aspect-square max-w-md">
+        <div class="relative w-full aspect-square max-w-[400px] md:max-w-[450px]">
           <CityWheel 
-            :cities="filteredCities.length > 0 ? filteredCities : CITIES"
+            v-if="isMounted"
+            :cities="filteredCities"
             :rotation="wheelRotation"
             :is-spinning="isSpinning"
           />
+          <!-- Fallback for SSR -->
+          <div v-else class="w-full h-full rounded-full bg-muted animate-pulse border-8 border-white shadow-lg"></div>
           
-          <!-- Pointer (top center) -->
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-10">
-            <div class="w-0 h-0 border-l-8 border-r-8 border-t-12 border-l-transparent border-r-transparent border-t-primary"></div>
+          <!-- Pointer (top center, strictly pointing down) -->
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-30 filter drop-shadow-md">
+            <div class="w-8 h-10 bg-primary flex items-center justify-center rounded-t-sm rounded-b-xl transition-transform"
+                 :class="isSpinning ? 'animate-bounce' : ''">
+              <SafeIcon name="MapPin" :size="20" color="white" />
+            </div>
+            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-8 border-transparent border-t-primary"></div>
           </div>
         </div>
         
@@ -103,11 +131,14 @@ const handleNavigateToDetail = () => {
     </section>
     
     <!-- Result Card Section -->
-    <section class="py-8 px-4 bg-white/50 backdrop-blur-sm">
+    <section v-if="hasResult || !isMounted" class="pb-16 px-4 bg-gradient-to-t from-background to-transparent animate-slide-up">
       <div class="container mx-auto max-w-2xl">
+        <div class="text-center mb-6">
+          <Badge variant="outline" class="px-4 py-1 text-primary border-primary">恭喜！您的旅行目的地已就绪</Badge>
+        </div>
         <ResultCard 
           :city="selectedCity"
-          :is-visible="!isSpinning || isClient"
+          :is-visible="hasResult || !isMounted"
           @navigate-detail="handleNavigateToDetail"
         />
       </div>

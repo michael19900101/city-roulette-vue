@@ -19,9 +19,10 @@ const handleClick = () => {
 </script>
 
 <template>
-  <Button
+<Button
     size="lg"
-    class="relative px-8 py-6 text-lg font-bold rounded-full shadow-card hover:shadow-hover transition-all"
+    class="relative px-12 py-8 text-xl font-extrabold rounded-full shadow-card hover:shadow-hover transition-all active:scale-90 group"
+    :class="isSpinning ? 'opacity-80 scale-95' : 'gradient-warm'"
     :disabled="isSpinning"
     @click="handleClick"
   >

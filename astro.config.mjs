@@ -8,6 +8,8 @@ import vue from '@astrojs/vue';
 import tailwind from '@astrojs/tailwind';
 // import { vueNodeTransform, astroSourceIntegration } from './scripts/inject-source-info';
 
+const projectRoot = fileURLToPath(new URL('.', import.meta.url));
+
 function collectRoutes(projectRoot) {
   const srcDir = path.join(projectRoot, 'src');
   const fileTypes = /\.(astro|vue|js|ts|jsx|tsx|md|mdx|html)$/i;
@@ -102,17 +104,10 @@ function redirectMissingRoutes() {
 
 export default defineConfig({
   integrations: [
-    vue({
-      template: {
-        compilerOptions: {
-          // nodeTransforms: [vueNodeTransform()]
-        }
-      }
-    }),
+    vue(),
     tailwind({
       applyBaseStyles: false
     }),
-    // astroSourceIntegration(),
     redirectMissingRoutes()
   ],
   output: 'static',
@@ -136,9 +131,10 @@ export default defineConfig({
   },
   compressHTML: false,
   vite: {
+    base: '/',
     resolve: {
       alias: {
-        '@': '/src'
+        '@': path.join(projectRoot, 'src')
       }
     },
     build: {

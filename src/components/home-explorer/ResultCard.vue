@@ -25,8 +25,8 @@ const ratingStars = computed(() => {
 
 <template>
   <Card 
-    class="overflow-hidden transition-all duration-500"
-    :class="isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+class="overflow-hidden transition-all duration-700 shadow-hover"
+    :class="isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'"
   >
     <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
       <!-- Image -->

@@ -23,8 +23,11 @@
     --destructive-foreground: 0 0% 100%;
     --border: 214 25% 88%;
     --input: 214 25% 88%;
-    --ring: 18 88% 58%;
+--ring: 18 88% 58%;
     --radius: 0.75rem;
+
+    /* Animation Easing */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
     
     /* Custom shadow variables */
     --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);

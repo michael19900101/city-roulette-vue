@@ -3,8 +3,7 @@ import { parse } from '@astrojs/compiler';
 import { readFileSync } from 'fs';
 
 function getRelativePath(filePath: string): string {
-  const normalized = filePath.replace(/^.*\/src\//, 'src/');
-  return normalized.startsWith('src/') ? normalized : `src/${normalized.replace(/^\/+/, '')}`;
+  return filePath.replace(/^.*\/src\//, 'src/');
 }
 
 export function vueNodeTransform() {
