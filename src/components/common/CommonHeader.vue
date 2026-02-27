@@ -43,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
           <div class="w-8 h-8 rounded-lg bg-gradient-warm flex items-center justify-center text-orange-950 shadow-soft">
             <SafeIcon name="Compass" :size="20" />
           </div>
-          <span class="hidden sm:inline-block text-gradient">城市转盘</span>
+          <span class="inline-block text-gradient">城市转盘</span>
         </a>
       </div>
 
