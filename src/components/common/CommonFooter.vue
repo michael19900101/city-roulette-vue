@@ -3,7 +3,7 @@
 import SafeIcon from '@/components/common/SafeIcon.vue'
 import { Button } from '@/components/ui/button'
 
-const currentYear = 2024
+const currentYear = 2026
 
 const socialLinks = [
   { icon: 'Github', href: '#', label: 'GitHub' },
