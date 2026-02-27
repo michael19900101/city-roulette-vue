@@ -137,6 +137,9 @@ export default defineConfig({
         '@': path.join(projectRoot, 'src')
       }
     },
+    server: {
+      host: '0.0.0.0'
+    },
     build: {
       target: 'es2022',
       minify: 'esbuild',
