@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "astro dev --host",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "logs": "pm2 logs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -40,6 +44,7 @@
     "magic-string": "^0.30.19",
     "playwright": "1.55.0",
     "postcss": "^8.4.49",
+    "serve": "^14.2.4",
     "typescript": "^5.9.3",
     "unist-util-visit": "^5.0.0"
   }
